@@ -11,7 +11,6 @@
 
 	<modules>
 		<module>core</module>
-		<module>project</module>
 		<module>util</module>
 		<module>tester</module>
 	</modules>
