@@ -1,4 +1,4 @@
-Demonstrating problems with mixing dependencies of different scopes (compile and test), tested in Eclipse IDE (2023-09).
+Demonstrate mixing dependencies of different scopes (compile and test), tested in Eclipse IDE (2023-09).
 
 For simplicity real class names are shortened to A..D in the following overview:
 
@@ -30,10 +30,23 @@ It does not matter if util and/or tester are opened or closed (after mvn install
 - tester > Run As JUnit Test	-> runtime error: java.lang.IllegalAccessError: class org.junit.platform.launcher.core.ServiceLoaderRegistry (in unnamed module @0x4f933fd1) cannot access class org.junit.platform.commons.logging.LoggerFactory (in module org.junit.platform.commons) because module org.junit.platform.commons does not export org.junit.platform.commons.logging to unnamed module @0x4f933fd1
 								-> see also bug description in https://issues.apache.org/jira/projects/WICKET/issues/WICKET-7072
 
-- run CoreMain					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
-- run CoreTest					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
+- run CoreMain					-> ok
+- run CoreTest					-> ok
 - core > Run As JUnit Test		-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
+									(NOTE: The warning only comes if gluser1357.tester has a module-info)
+									(in case of problems try to delete it because tester is only thought as scope=test dependency with module path tweaked by Eclipse)
 
 - run ProjectMain				-> ok
 - run ProjectTest				-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
 - project > Run As JUnit Test	-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
+
+
+==========
+IMPORTANT:
+==========
+Sometimes, I got the following:
+- run CoreMain					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
+- run CoreTest					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
+
+This could be of some strange state that COULD NOT be reconstructed by Project clean or Maven Update!
+A way out is to delete complete workspace.
