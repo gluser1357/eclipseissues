@@ -33,8 +33,6 @@ It does not matter if util and/or tester are opened or closed (after mvn install
 - run CoreMain					-> ok
 - run CoreTest					-> ok
 - core > Run As JUnit Test		-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
-									(NOTE: The warning only comes if gluser1357.tester has a module-info)
-									(in case of problems try to delete it because tester is only thought as scope=test dependency with module path tweaked by Eclipse)
 
 - run ProjectMain				-> ok
 - run ProjectTest				-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
@@ -44,9 +42,16 @@ It does not matter if util and/or tester are opened or closed (after mvn install
 ==========
 IMPORTANT:
 ==========
-Sometimes, I got the following:
-- run CoreMain					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
-- run CoreTest					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
 
-This could be of some strange state that COULD NOT be reconstructed by Project clean or Maven Update!
-A way out is to delete complete workspace.
+Some notes about possible warnings or errors:
+
+- WARNING: Unknown module: gluser1357.tester specified to --add-reads
+  This warning comes only if gluser1357.tester has a module-info.
+  In case of problems we could delete module-info because tester is only thought as scope=test dependency,
+  and the module path will be tweaked by Eclipse / Surefire.
+
+- Sometimes we got a FindException in these cases:
+  - run CoreMain   -> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
+  - run CoreTest   -> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
+  Workaround: This strange state could mostly be "repaired" by switching to a new workspace (or eventually delete it).
+  It could NOT be solved by Project clean or Maven Update(!)
