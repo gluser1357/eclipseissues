@@ -16,5 +16,7 @@ public class TesterTest {
 	@Test
 	public void test() {
 		System.out.println("TesterTest @Test");
+		UtilMain a;
+		Tester b;
 	}
 }
