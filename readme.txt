@@ -1,25 +1,24 @@
-Demonstrating problems with mixing dependencies of different scopes (compile and test), tested in Eclipse IDE (2023-09).
+Demonstrating JPMS FindException when running programs in Eclipse IDE (2023-09). 
+- in core, tester is added as dependency with <scope>test</scope>,
+  but nevertheless, boot layer initialization tries to look it up
+  when running a class from /src/main/java. 
 
-For simplicity real class names are shortened to A..D in the following overview:
+For simplicity real class names are shortened to A..C in the following overview:
 
 =====================================================================
 util:
 src/main/java/util/A
 -> util.jar
 
-tester:
+tester, depends on util
 src/main/java/tester/Tester (code depends on A)
 -> tester.jar
 
-core:
+core, depends on util, and tester (test scope):
 src/main/java/core/B (code depends on A)
 src/test/java/core/C (code depends on A, Tester and B)
 -> core.jar
 
-project:
-src/main/java/project/D (code depends on A and B)
-src/test/java/project/E (code depends on A, Tester, B and D)
--> project.jar
 =====================================================================
 
 It does not matter if util and/or tester are opened or closed (after mvn install).
@@ -33,7 +32,3 @@ It does not matter if util and/or tester are opened or closed (after mvn install
 - run CoreMain					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
 - run CoreTest					-> runtime error: Error occurred during initialization of boot layer java.lang.module.FindException: Module gluser1357.tester not found
 - core > Run As JUnit Test		-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
-
-- run ProjectMain				-> ok
-- run ProjectTest				-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
-- project > Run As JUnit Test	-> ok (with WARNING: Unknown module: gluser1357.tester specified to --add-reads)
