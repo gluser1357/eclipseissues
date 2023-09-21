@@ -1,33 +1,35 @@
-Demonstrating that dependencies of type test-jar in Eclipse IDE (2023-09).
+Minimal example for demonstrating workspace resolution bug in modular project
+for dependencies of type test-jar in Eclipse IDE (2023-09).
 
-=========================================================================================================
-Case: Workspace resolution of util artifact
-=========================================================================================================
+===============================
+Steps to reproduce
+===============================
 
-Project util must be opened.
+- import projects util and core and open both
+- look at module-info.java in project core: "requires gluser1357.util;"
+- look at maven-compiler-plg
+- look at CoreMain.java: no errors.
+- look at CoreTest.java:
+  - The import gluser1357.util.tester.UtilTester cannot be resolved
+  - The type gluser1357.util.tester.UtilTester is not accessible
+- try to run CoreTest.java:
+  - Error occurred during initialization of boot layer
+    java.lang.module.FindException: Module gluser1357.util not found, required by gluser1357.core
+- try run mvn clean install on project util -> ok
+- try run mvn clean install on project core -> ok
 
-With "requires gluser1357.util" in core module-info:
+Now, comment out "requires gluser1357.util;" in module-info.java in project core
+- look at CoreMain.java: The type gluser1357.util.something.UtilMain is not accessible
+  (this message is correct, but production code cannot be run anymore)
+- look at CoreTest.java: no errors.
 
-- run CoreMain 				-> ok
-- run CoreTest 				-> ok
-- core > Run As JUnit Test	-> ok
-- mvn install (after mvn install core) -> ok
+Now, comment in again: "requires gluser1357.util;" and close project util
+- everything works as expected (workspace resolution is disabled for project util).
 
-=========================================================================================================
-Case: Maven resolution of util artifact
-=========================================================================================================
-
-Run "mvn install" on project util and close it.
-
-With "requires gluser1357.util" in core module-info:
-
-- util must be closed
-- run CoreMain				-> ok
-- run CoreTest				-> ok (with WARNING: Unknown module: gluser1357.util specified to --add-reads)
-- core > Run As JUnit Test	-> ok (with WARNING: Unknown module: gluser1357.util specified to --add-reads)
-- mvn install (after mvn install core) -> ok
-
-- Note, dependency order in core/pom.xml may have influence of running CoreMain, CoreTest etc.
-- Note, in core (tester), /src/main/java/tester must be empty if /src/test/java/tester does exist (package clashing of jar and test-jar).
-Otherwise, when running CoreTest, Run As and mvn install: "The package gluser1357.util is accessible from more than one module: <unnamed>, gluser1357.util" (this is correct!) 
-- Note, FindException may have other causes. Retry with new workspace.
+===============================
+Summary
+===============================
+- modular projects with dependencies of type test-jar can't run test code in Eclipse
+  if workspace resolution is turned on (=default) for the project offering that dependency
+- if workspace resolution is turned off, or use maven to run, everything works as expected.
+- obviously it's a bug in Eclipse IDE (m2e?)
