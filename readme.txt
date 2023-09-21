@@ -1,8 +1,4 @@
-Demonstrating that dependencies of type test-jar are not supported in Eclipse IDE (2023-09).
-
-The Problem:
-- either main or test code code can be executed in project core, but not both.
-- see description below on a) how to reproduce it and b) what errors occur.
+Demonstrating that dependencies of type test-jar in Eclipse IDE (2023-09).
 
 =========================================================================================================
 Case: Workspace resolution of util artifact
@@ -13,15 +9,9 @@ Project util must be opened.
 With "requires gluser1357.util" in core module-info:
 
 - run CoreMain 				-> ok
-- run CoreTest 				-> runtime error: Error occurred during initialization of boot layer: java.lang.module.FindException: Module gluser1357.util not found, required by gluser1357.core
-- core > Run As JUnit Test	-> runtime error: Error occurred during initialization of boot layer: java.lang.module.FindException: Module gluser1357.util not found, required by gluser1357.core
-
-Without "requires gluser1357.util" in core module-info:
-
-- run CoreMain				-> error in CoreMain: "The type gluser1357.util.UtilMain is not accessible" (that's ok because of missing module declaration)
-- run CoreTest				-> ok (with WARNING: Unknown module: gluser1357.util specified to --add-reads)
-- core > Run As JUnit Test	-> ok (with WARNING: Unknown module: gluser1357.util specified to --add-reads)
-
+- run CoreTest 				-> ok
+- core > Run As JUnit Test	-> ok
+- mvn install (after mvn install core) -> ok
 
 =========================================================================================================
 Case: Maven resolution of util artifact
@@ -33,11 +23,11 @@ With "requires gluser1357.util" in core module-info:
 
 - util must be closed
 - run CoreMain				-> ok
-- run CoreTest				-> error in CoreMain: "The package gluser1357.util is accessible from more than one module: <unnamed>, gluser1357.util"
-- core > Run As JUnit Test	-> error in CoreMain: "The package gluser1357.util is accessible from more than one module: <unnamed>, gluser1357.util"
+- run CoreTest				-> ok (with WARNING: Unknown module: gluser1357.util specified to --add-reads)
+- core > Run As JUnit Test	-> ok (with WARNING: Unknown module: gluser1357.util specified to --add-reads)
+- mvn install (after mvn install core) -> ok
 
-Without "requires gluser1357.util" in core module-info:
-
-- run CoreMain				-> error in CoreMain: "The type gluser1357.util.UtilMain is not accessible" (that's ok because of missing module declaration)
-- run CoreTest				-> ok (without warnings)
-- core > Run As JUnit Test	-> ok (without warnings)
+- Note, dependency order in core/pom.xml may have influence of running CoreMain, CoreTest etc.
+- Note, in core (tester), /src/main/java/tester must be empty if /src/test/java/tester does exist (package clashing of jar and test-jar).
+Otherwise, when running CoreTest, Run As and mvn install: "The package gluser1357.util is accessible from more than one module: <unnamed>, gluser1357.util" (this is correct!) 
+- Note, FindException may have other causes. Retry with new workspace.

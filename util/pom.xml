@@ -79,6 +79,11 @@
 						<goals>
 							<goal>test-jar</goal>
 						</goals>
+						<configuration>
+        					<includes>
+          						<include>gluser1357/util/tester/**</include>
+        					</includes>
+      					</configuration>
 					</execution>
 				</executions>
 			</plugin>

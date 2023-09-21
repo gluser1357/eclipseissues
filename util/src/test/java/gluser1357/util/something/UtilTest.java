@@ -1,4 +1,4 @@
-package gluser1357.util;
+package gluser1357.util.something;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,7 +6,6 @@ public class UtilTest {
 
 	public static void main(String[] args) {
 		System.out.println("UtilTest");
-		UtilMain a;
 		UtilTest b;
 	}
 	
