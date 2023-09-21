@@ -2,6 +2,15 @@ Minimal example for demonstrating workspace resolution bug in modular project
 for dependencies of type test-jar in Eclipse IDE (2023-09).
 
 ===============================
+Summary
+===============================
+
+- in modular projects with dependencies of type test-jar, code of test-jar cannot be accessed
+  in Eclipse if workspace resolution is turned on (=default) for the project offering that dependency
+- if workspace resolution is turned off, or use maven to run, everything works as expected.
+- obviously it's a bug in Eclipse IDE (m2e?)
+
+===============================
 Steps to reproduce
 ===============================
 
@@ -27,11 +36,3 @@ Now, comment out "requires gluser1357.util;" in module-info.java in project core
 Now, comment in again: "requires gluser1357.util;" and close project util
 - everything can be executed as expected (workspace resolution is disabled for project util).
 
-===============================
-Summary
-===============================
-
-- in modular projects with dependencies of type test-jar, code of test-jar cannot be accessed
-  in Eclipse if workspace resolution is turned on (=default) for the project offering that dependency
-- if workspace resolution is turned off, or use maven to run, everything works as expected.
-- obviously it's a bug in Eclipse IDE (m2e?)
