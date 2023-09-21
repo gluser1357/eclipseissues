@@ -30,6 +30,7 @@ Now, comment in again: "requires gluser1357.util;" and close project util
 ===============================
 Summary
 ===============================
+
 - in modular projects with dependencies of type test-jar, code of test-jar cannot be accessed
   in Eclipse if workspace resolution is turned on (=default) for the project offering that dependency
 - if workspace resolution is turned off, or use maven to run, everything works as expected.
